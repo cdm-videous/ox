@@ -95,29 +95,47 @@
 
     <div class="video-wrapper">
         <video id="myVideo" autoplay loop playsinline controls muted>
-           <!-- Ditambahkan tag source dengan id agar sinkron dengan javascript -->
            <source id="videoSource" src="" type="video/mp4">
         </video>
     </div>
 
-    <!-- Script Utama (Ganti Video URL, Autoplay & Proteksi Halaman) -->
+    <!-- Script Utama (Sistem Database ID, Autoplay & Proteksi Halaman) -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var video = document.getElementById("myVideo");
             var videoSource = document.getElementById("videoSource");
 
-            // 1. Skrip Mengambil & Mengubah Video via Parameter URL (?id=...)
+            // ==========================================
+            // 1. DAFTAR VIDEO / DATABASE VIDEO BERDASARKAN ID
+            // ==========================================
+            // Silakan ganti atau tambah kode di bawah ini sesuai kebutuhan Anda.
+            var daftarVideo = {
+                "1": "video/film-satu.mp4", 
+                "2": "https://server-video.com",
+                "premium": "video/iklan-spesial.mp4"
+            };
+
+            // Video default jika parameter ?id= tidak diisi atau tidak terdaftar
+            var videoDefault = "video/default.mp4"; 
+
+            // ==========================================
+            // 2. PROSES MEMBACA PARAMETER URL (?id=...)
+            // ==========================================
             var urlParams = new URLSearchParams(window.location.search);
-            var videoUrlParam = urlParams.get('id'); // SEKARANG MENGGUNAKAN '?id='
+            var idParam = urlParams.get('id'); // Mengambil nilai setelah ?id=
 
-            if (videoUrlParam) {
-                // Mendukung input nama file lokal (misal: video2.mp4) maupun link luar lengkap (https://...)
-                var finalSrc = videoUrlParam.startsWith('http') ? videoUrlParam : videoUrlParam;
-                videoSource.src = finalSrc;
-                video.load(); // Memuat ulang video setelah sumber diganti
+            // Tentukan video yang akan diputar
+            if (idParam && daftarVideo[idParam]) {
+                videoSource.src = daftarVideo[idParam];
+            } else {
+                videoSource.src = videoDefault;
             }
+            
+            video.load(); // Memuat ulang pemutar video dengan sumber yang baru
 
-            // 2. Skrip Pengendali Sistem Auto Play Video
+            // ==========================================
+            // 3. SKRIP PENGENDALI AUTOPLAY VIDEO
+            // ==========================================
             if (video) {
                 var playPromise = video.play();
                 if (playPromise !== undefined) {
@@ -135,12 +153,12 @@
             }
         });
 
-        // 3. Sistem Proteksi Klik Kanan / Context Menu
+        // 4. Sistem Proteksi Klik Kanan / Context Menu
         document.addEventListener("contextmenu", function(e) {
             e.preventDefault();
         });
 
-        // 4. Sistem Proteksi Blokir Inspect Element & Pintasan Keyboard
+        // 5. Sistem Proteksi Blokir Inspect Element & Pintasan Keyboard
         document.addEventListener("keydown", function(e) {
             if (
                 e.key === "F12" || 
