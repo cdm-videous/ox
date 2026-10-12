@@ -182,21 +182,19 @@
       }
     });
   </script>
-// Anti-Inspect Element & Proteksi
-        document.addEventListener("contextmenu", function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener("keydown", function(e) {
-            if (
-                e.key === "F12" || 
-                (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C" || e.key === "i" || e.key === "j" || e.key === "c")) || 
-                (e.ctrlKey && (e.key === "u" || e.key === "c" || e.key === "a" || e.key === "U" || e.key === "C" || e.key === "A"))
-            ) {
-                e.preventDefault();
-            }
-        });
-    </script>
+<script>
+!function(){
+  "use strict";
+  // Mematikan klik kanan
+  window.addEventListener("contextmenu", (e => { e.preventDefault(); }));
+  // Mematikan shortcut keyboard (Ctrl+C, Ctrl+U, Ctrl+Shift+I, dll)
+  window.addEventListener("keydown", (e => {
+    if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) {
+      e.preventDefault();
+    }
+  }));
+}();
+</script>
 <script type="text/javascript">var _Hasync= _Hasync|| [];
 _Hasync.push(['Histats.start', '1,5018377,4,108,170,20,00010101']);
 _Hasync.push(['Histats.fasi', '1']);
