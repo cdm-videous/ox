@@ -93,117 +93,55 @@
       max-height: 100%;
     }
 
-    /* ERROR */
-    .error-container {
-      color: white;
-      text-align: center;
-      background: black;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    /* 🔥 WATCH MODE (kalau ada ?id=) */
-    .watch-mode .navbar, 
-    .watch-mode .hero {
-      display: none !important;
-    }
-    .watch-mode body, 
-    .watch-mode html {
-      background: black;
-      overflow: hidden;
+    /* Sembunyikan konten utama jika dalam watch-mode */
+    .watch-mode .navbar, .watch-mode .hero {
+      display: none;
     }
     .watch-mode .plyr-container {
-      display: flex !important;
+      display: flex;
     }
   </style>
-
-  <link rel="me" href="https://www.blogger.com/profile/08349335569668208117" />
-  <meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
-  <meta name='google-adsense-platform-domain' content='blogspot.com'/>
 </head>
 <body>
 
   <!-- NAVBAR -->
   <div class="navbar">
-    <div class="logo">videy</div>
+    <div class="logo">Videy</div>
     <div class="nav-right">
-      <a href="#">Sign Up</a>
+      <a href="#">Terms</a>
       <a href="#" class="upload-btn">Upload</a>
     </div>
   </div>
 
   <!-- HERO -->
   <div class="hero">
-    <h1>Upload your videos</h1>
-    <h2>and share</h2>
-    <p>Free and simple video hosting.</p>
-    <button>Upload Video</button>
+    <h1>Free and Simple</h1>
+    <h2>Video Hosting</h2>
+    <p>Upload your video and share it instantly.</p>
+    <button onclick="window.location.search = '?id=example'">Coba Mode Video</button>
   </div>
 
-  <!-- PLAYER -->
+  <!-- PLAYER CONTAINER -->
   <div class="plyr-container">
-    <video id="player" playsinline controls>
-      <source id="videoSource" src="" type="video/mp4">
+    <!-- 1. Menambahkan atribut 'muted' dan 'playsinline' langsung di HTML -->
+    <video id="player" playsinline controls muted>
+      <source src="https://googleapis.com" type="video/mp4" />
     </video>
   </div>
 
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <!-- Plyr JS -->
+  <script src="https://plyr.io"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get("id");
-      if (!id) return;
-
-      // Validasi ID alfanumerik
-      if (!/^[a-zA-Z0-9]+$/.test(id)) {
-        document.body.innerHTML = '<div class="error-container"><h2>Video tidak ditemukan</h2></div>';
-        return;
-      }
-
-      const videoUrl = "https://cdn2.slicedrive.com/" + id + ".mp4";
-      const source = document.getElementById("videoSource");
-      const video = document.getElementById("player");
-
-      source.src = videoUrl;
-
-      video.onerror = function () {
-        document.body.innerHTML = '<div class="error-container"><h2>Video gagal dimuat</h2><p>Cek ID atau server.</p></div>';
-      };
-
-      video.load();
-      try {
-        new Plyr(video);
-      } catch (e) {
-        console.error("Gagal menginisialisasi Plyr:", e);
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.documentElement.classList.contains("watch-mode")) {
+        // 2. Mengatur opsi 'muted: true' saat inisialisasi Plyr
+        const player = new Plyr('#player', {
+          muted: true,
+          volume: 0,
+          autoplay: true // Opsional: video otomatis putar tanpa diblokir browser karena sudah di-mute
+        });
       }
     });
   </script>
-<script>
-!function(){
-  "use strict";
-  // Mematikan klik kanan
-  window.addEventListener("contextmenu", (e => { e.preventDefault(); }));
-  // Mematikan shortcut keyboard (Ctrl+C, Ctrl+U, Ctrl+Shift+I, dll)
-  window.addEventListener("keydown", (e => {
-    if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) {
-      e.preventDefault();
-    }
-  }));
-}();
-</script>
-<script type="text/javascript">var _Hasync= _Hasync|| [];
-_Hasync.push(['Histats.start', '1,5018377,4,108,170,20,00010101']);
-_Hasync.push(['Histats.fasi', '1']);
-_Hasync.push(['Histats.track_hits', '']);
-(function() {
-var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
-hs.src = ('//s10.histats.com/js15_as.js');
-(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
-})();</script>
-<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5018377&101" alt="web tracker" border="0"></a></noscript>
 </body>
 </html>
