@@ -3,158 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Pemutar Video Dinamis</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #000000;
-            padding: 20px;
-            margin: 0;
-            position: relative;
-        }
-        /* Lapisan link disembunyikan secara default menggunakan display: none */
-        .fullscreen-link {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 9999;
-        }
-        .video-title, .video-wrapper, .script-container {
-            position: relative;
-            z-index: 2;
-        }
-        .video-title {
-            font-size: 1em;
-            font-weight: bold;
-            margin-bottom: 18px;
-            letter-spacing: 1px;
-            color: DarkGrey;
-        }
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 720px;
-            margin: 0 auto;
-            z-index: 2;
+            background-color: #222;
+            color: #fff;
+            padding: 50px;
         }
         video {
-            width: 100%;
             max-width: 100%;
-            border-radius: 10px;
-            display: block;
-        }
-        .ad-banner-inside {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 320px;
-            height: 50px;
-            background: rgba(255,255,255,0.92);
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 3;
-            overflow: hidden;
-        }
-        @keyframes blink {
-            0%, 100% { box-shadow: 0 0 15px rgba(255,255,255,.8); }
-            50% { box-shadow: 0 0 25px rgba(255,255,255,1); }
-        }
-        #ad-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: #000;
-            color: #fff;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 16px 28px;
+            width: 800px;
             border-radius: 8px;
-            text-decoration: none;
-            box-shadow: 0 0 15px rgba(255,255,255,.8);
-            animation: blink 1.5s infinite;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        @media (max-width: 400px) {
-            .ad-banner-inside {
-                width: 95vw;
-                height: 40px;
-                font-size: 0.85em;
-            }
+        .menu {
+            margin-top: 20px;
+        }
+        a {
+            color: #00adb5;
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <div class="video-wrapper">
-        <video id="myVideo" autoplay loop playsinline controls muted>
-            <!-- Tag source ditambahkan kembali agar skrip pengganti video berfungsi -->
-            <source id="videoSource" src="" type="video/mp4">
-        </video>
+    <h1>Pemutar Video Dinamis</h1>
+    <p>Video saat ini berdasarkan parameter URL <code id="param-display">?id=</code></p>
+
+    <!-- Elemen Video Player -->
+    <video id="myVideo" controls autoplay muted>
+        <source id="videoSource" src="" type="video/mp4">
+        Browser Anda tidak mendukung tag video.
+    </video>
+
+    <!-- Navigasi Contoh Uji Coba -->
+    <div class="menu">
+        <p>Coba Klik Link di Bawah Ini untuk Mengganti Video:</p>
+        <a href="?id=video1">Nonton Video 1</a> | 
+        <a href="?id=video2">Nonton Video 2</a> | 
+        <a href="?id=video3">Nonton Video 3</a>
     </div>
 
-    <!-- Script Utama (Ganti Video URL, Autoplay & Proteksi Halaman) -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var video = document.getElementById("myVideo");
-            var videoSource = document.getElementById("videoSource");
+        // 1. Daftar video yang tersedia (Sesuaikan dengan file milik Anda)
+        const daftarVideo = {
+            "video1": "video/kucing.mp4",
+            "video2": "video/pemandangan.mp4",
+            "video3": "video/tutorial.mp4"
+        };
 
-            // 1. Skrip Mengambil & Mengubah Video via Parameter URL (?id=...)
-            var urlParams = new URLSearchParams(window.location.search);
-            var videoIdParam = urlParams.get('id'); // SEKARANG MENGGUNAKAN '?id='
+        // Video default jika ID tidak ditemukan atau URL tidak pakai parameter
+        const videoDefault = "video/kucing.mp4"; 
 
-            if (videoIdParam) {
-                var finalSrc = videoIdParam;
-                
-                // Jika input hanya nama/angka tanpa format file dan bukan link http/https, otomatis tambahkan .mp4
-                if (!videoIdParam.startsWith('http') && !videoIdParam.includes('.')) {
-                    finalSrc = videoIdParam + '.mp4';
-                }
-                
-                videoSource.src = finalSrc;
-                video.load(); // Memuat ulang pemutar video setelah sumber diganti
-            }
+        // 2. Mengambil parameter 'id' dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('id'); // Mengambil nilai dari ?id=
 
-            // 2. Skrip Pengendali Sistem Auto Play Video
-            if (video) {
-                var playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(function(error) {
-                        console.log("Autoplay dicegah browser, menunggu interaksi user.");
-                        var startVideo = function() {
-                            video.play();
-                            document.removeEventListener("click", startVideo);
-                            document.removeEventListener("touchstart", startVideo);
-                        };
-                        document.addEventListener("click", startVideo);
-                        document.addEventListener("touchstart", startVideo);
-                    });
-                }
-            }
-        });
+        // Ambil elemen HTML
+        const videoElement = document.getElementById('myVideo');
+        const sourceElement = document.getElementById('videoSource');
+        const paramDisplay = document.getElementById('param-display');
 
-        // 3. Sistem Proteksi Klik Kanan / Context Menu
-        document.addEventListener("contextmenu", function(e) {
-            e.preventDefault();
-        });
+        // 3. Logika penggantian video
+        if (videoId && daftarVideo[videoId]) {
+            // Jika ID ada di dalam daftar
+            sourceElement.src = daftarVideo[videoId];
+            paramDisplay.innerText = `?id=${videoId}`;
+        } else if (videoId) {
+            // Jika ID ditulis tapi tidak terdaftar, putar video default
+            alert("Video tidak ditemukan! Memutar video default.");
+            sourceElement.src = videoDefault;
+            paramDisplay.innerText = `?id=${videoId} (Tidak Ditemukan - Diputar Default)`;
+        } else {
+            // Jika tidak ada parameter ?id= sama sekali
+            sourceElement.src = videoDefault;
+            paramDisplay.innerText = `tidak ada (Diputar Default)`;
+        }
 
-        // 4. Sistem Proteksi Blokir Inspect Element & Pintasan Keyboard
-        document.addEventListener("keydown", function(e) {
-            if (
-                e.key === "F12" || 
-                (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C" || e.key === "i" || e.key === "j" || e.key === "c")) || 
-                (e.ctrlKey && (e.key === "u" || e.key === "c" || e.key === "a" || e.key === "U" || e.key === "C" || e.key === "A"))
-            ) {
-                e.preventDefault();
-            }
-        });
+        // 4. Reload video agar sumber baru langsung diputar
+        videoElement.load();
     </script>
 
 </body>
