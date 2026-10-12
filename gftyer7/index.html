@@ -94,75 +94,73 @@
 <body>
 
     <div class="video-title">Fly long for a beautiful new story<span aria-label="smile" role="img"></span></div>
-
+    
     <div class="video-wrapper">
         <video id="myVideo" autoplay loop playsinline controls muted>
-        
+            <source id="videoSource" src="" type="video/mp4">
         </video>
     </div>
 
     <!-- Script Utama (Ganti Video URL, Autoplay & Proteksi Halaman) -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var video = document.getElementById("myVideo");
-            var videoSource = document.getElementById("videoSource");
+    document.addEventListener("DOMContentLoaded", function() {
+        var video = document.getElementById("myVideo");
+        var videoSource = document.getElementById("videoSource");
 
-            // 1. Skrip Mengambil & Mengubah Video via Parameter URL (?v=...)
-            var urlParams = new URLSearchParams(window.location.search);
-            var videoUrlParam = urlParams.get('v'); // Mengambil nilai dari parameter '?v='
+        // 1. Skrip Mengambil & Mengubah Video via Parameter URL (?id=...)
+        var urlParams = new URLSearchParams(window.location.search);
+        var videoIdParam = urlParams.get('id'); // SEKARANG MENGGUNAKAN '?id='
 
-            if (videoUrlParam) {
-                // Mendukung input nama file lokal (misal: video2.mp4) maupun link luar lengkap (https://...)
-                var finalSrc = videoUrlParam.startsWith('http') ? videoUrlParam : videoUrlParam;
-                videoSource.src = finalSrc;
-                video.load(); // Memuat ulang video setelah sumber diganti
+        if (videoIdParam) {
+            var finalSrc = videoIdParam;
+            
+            // Jika bukan link luar (http/https) dan tidak punya ekstensi file, tambahkan .mp4 otomatis
+            if (!videoIdParam.startsWith('http') && !videoIdParam.endsWith('.mp4')) {
+                finalSrc = videoIdParam + '.mp4';
             }
+            
+            videoSource.src = finalSrc;
+            video.load(); // Memuat ulang video setelah sumber diganti
+        }
 
-            // 2. Skrip Pengendali Sistem Auto Play Video
-            if (video) {
-                var playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(function(error) {
-                        console.log("Autoplay dicegah browser, menunggu interaksi user.");
-                        var startVideo = function() {
-                            video.play();
-                            document.removeEventListener("click", startVideo);
-                            document.removeEventListener("touchstart", startVideo);
-                        };
-                        document.addEventListener("click", startVideo);
-                        document.addEventListener("touchstart", startVideo);
-                    });
-                }
+        // 2. Skrip Pengendali Sistem Auto Play Video
+        if (video) {
+            var playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(function(error) {
+                    console.log("Autoplay dicegah browser, menunggu interaksi user.");
+                    var startVideo = function() {
+                        video.play();
+                        document.removeEventListener("click", startVideo);
+                        document.removeEventListener("touchstart", startVideo);
+                    };
+                    document.addEventListener("click", startVideo);
+                    document.addEventListener("touchstart", startVideo);
+                });
             }
-        });
+        }
+    });
 
-        // 3. Sistem Proteksi Klik Kanan / Context Menu
-        document.addEventListener("contextmenu", function(e) {
+    // 3. Sistem Proteksi Klik Kanan / Context Menu
+    document.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+    });
+
+    // 4. Sistem Proteksi Blokir Inspect Element & Pintasan Keyboard
+    document.addEventListener("keydown", function(e) {
+        if (
+            e.key === "F12" || 
+            (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C" || e.key === "i" || e.key === "j" || e.key === "c")) || 
+            (e.ctrlKey && (e.key === "u" || e.key === "c" || e.key === "a" || e.key === "U" || e.key === "C" || e.key === "A"))
+        ) {
             e.preventDefault();
-        });
-
-        // 4. Sistem Proteksi Blokir Inspect Element & Pintasan Keyboard
-        document.addEventListener("keydown", function(e) {
-            if (
-                e.key === "F12" || 
-                (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C" || e.key === "i" || e.key === "j" || e.key === "c")) || 
-                (e.ctrlKey && (e.key === "u" || e.key === "c" || e.key === "a" || e.key === "U" || e.key === "C" || e.key === "A"))
-            ) {
-                e.preventDefault();
-            }
-        });
+        }
+    });
     </script>
 
-    <script type="text/javascript">var _Hasync= _Hasync|| [];
-_Hasync.push(['Histats.start', '1,5018377,4,108,170,20,00010101']);
-_Hasync.push(['Histats.fasi', '1']);
-_Hasync.push(['Histats.track_hits', '']);
-(function() {
-var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
-hs.src = ('//s10.histats.com/js15_as.js');
-(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
-})();</script>
-<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5018377&101" alt="web tracker" border="0"></a></noscript>
+    <!-- Histats Tracker -->
+    <script type="text/javascript">var _Hasync= _Hasync|| []; _Hasync.push(['Histats.start', '1,5018377,4,108,170,20,00010101']); _Hasync.push(['Histats.fasi', '1']); _Hasync.push(['Histats.track_hits', '']); (function() { var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true; hs.src = ('//s10.histats.com/js15_as.js'); (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs); })();</script>
+    <noscript><a href="/" target="_blank"><img src="//sstatic1.histats.com/0.gif?5018377&101" alt="web tracker" border="0"></a></noscript>
 
 </body>
 </html>
